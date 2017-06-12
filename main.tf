@@ -40,8 +40,9 @@ resource "aws_ssm_patch_baseline" "baseline" {
 }
 
 resource "aws_ssm_patch_group" "patchgroup" {
+  count       = "${length(var.patch_groups)}"
   baseline_id = "${aws_ssm_patch_baseline.baseline.id}"
-  patch_group = "${var.envtype}-patch-group"
+  patch_group = "${element(var.patch_groups, count.index)}"
 }
 
 resource "aws_ssm_maintenance_window" "window" {
@@ -52,13 +53,13 @@ resource "aws_ssm_maintenance_window" "window" {
 }
 
 resource "aws_ssm_maintenance_window_target" "target" {
-  count         = "${length(var.patch_group_types)}"
+  count         = "${length(var.patch_groups)}"
   window_id     = "${aws_ssm_maintenance_window.window.id}"
   resource_type = "INSTANCE"
 
   targets {
     key    = "tag: Patch Group"
-    values = ["${element(var.patch_group_types, count.index)}"]
+    values = ["${element(var.patch_groups, count.index)}"]
   }
 }
 
