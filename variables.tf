@@ -43,5 +43,5 @@ variable "maintenance_window_cutoff" {
 
 variable "patch_groups" {
   type    = "list"
-  default = ["critical", "non-critical"]
+  default = ["static", "disposable"]
 }
