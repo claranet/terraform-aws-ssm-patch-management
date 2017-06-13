@@ -4,21 +4,6 @@ resource "aws_ssm_patch_baseline" "baseline" {
   approved_patches = ["${var.approved_patches}"]
   rejected_patches = ["${var.rejected_patches}"]
 
-  global_filter {
-    key    = "PRODUCT"
-    values = ["${var.product_versions}"]
-  }
-
-  global_filter {
-    key    = "CLASSIFICATION"
-    values = ["ServicePacks"]
-  }
-
-  global_filter {
-    key    = "MSRC_SEVERITY"
-    values = ["Low"]
-  }
-
   approval_rule {
     approve_after_days = 7
 
@@ -52,7 +37,7 @@ resource "aws_ssm_maintenance_window" "window" {
   cutoff   = "${var.maintenance_window_cutoff}"
 }
 
-resource "aws_ssm_maintenance_window_target" "target" {
+resource "aws_ssm_maintenance_window_target" "target_scan" {
   count         = "${length(var.patch_groups)}"
   window_id     = "${aws_ssm_maintenance_window.window.id}"
   resource_type = "INSTANCE"
@@ -63,23 +48,53 @@ resource "aws_ssm_maintenance_window_target" "target" {
   }
 }
 
-resource "aws_ssm_maintenance_window_task" "task" {
+resource "aws_ssm_maintenance_window_target" "target_install" {
+  window_id     = "${aws_ssm_maintenance_window.window.id}"
+  resource_type = "INSTANCE"
+
+  targets {
+    key    = "tag: Patch Group"
+    values = ["${element(var.patch_groups, 1)}"]
+  }
+}
+
+resource "aws_ssm_maintenance_window_task" "task_scan_patches" {
   window_id        = "${aws_ssm_maintenance_window.window.id}"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-ApplyPatchBaseline"
   priority         = 1
   service_role_arn = "${aws_iam_role.ssm_maintenance_window.arn}"
-  max_concurrency  = "2"
-  max_errors       = "1"
+  max_concurrency  = "10"
+  max_errors       = "2"
 
   targets {
     key    = "WindowTargetIds"
-    values = ["${aws_ssm_maintenance_window_target.target.*.id}"]
+    values = ["${aws_ssm_maintenance_window_target.target_scan.*.id}"]
   }
 
   task_parameters {
-    name   = "commands"
-    values = ["pwd"]
+    name   = "Operation"
+    values = ["Scan"]
+  }
+}
+
+resource "aws_ssm_maintenance_window_task" "task_install_patches" {
+  window_id        = "${aws_ssm_maintenance_window.window.id}"
+  task_type        = "RUN_COMMAND"
+  task_arn         = "AWS-ApplyPatchBaseline"
+  priority         = 2
+  service_role_arn = "${aws_iam_role.ssm_maintenance_window.arn}"
+  max_concurrency  = "10"
+  max_errors       = "2"
+
+  targets {
+    key    = "WindowTargetIds"
+    values = ["${aws_ssm_maintenance_window_target.target_install.*.id}"]
+  }
+
+  task_parameters {
+    name   = "Operation"
+    values = ["Install"]
   }
 }
 
