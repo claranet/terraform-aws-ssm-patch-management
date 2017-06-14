@@ -36,34 +36,33 @@ resource "aws_ssm_patch_group" "install_patchgroup" {
   patch_group = "${element(var.install_patch_groups, count.index)}"
 }
 
-resource "aws_ssm_maintenance_window" "window" {
-  name     = "${var.envtype}-patch-maintenance-window"
+resource "aws_ssm_maintenance_window" "scan_window" {
+  name     = "${var.envtype}-patch-maintenance-scan-window"
   schedule = "${var.scan_maintenance_window_schedule}"
   duration = "${var.maintenance_window_duration}"
   cutoff   = "${var.maintenance_window_cutoff}"
+}
 
-  lifecycle {
-    create_before_destroy = true
-  }
+resource "aws_ssm_maintenance_window" "install_window" {
+  name     = "${var.envtype}-patch-maintenance-install-window"
+  schedule = "${var.install_maintenance_window_schedule}"
+  duration = "${var.maintenance_window_duration}"
+  cutoff   = "${var.maintenance_window_cutoff}"
 }
 
 resource "aws_ssm_maintenance_window_target" "target_scan" {
   count         = "${length(var.scan_patch_groups)}"
-  window_id     = "${aws_ssm_maintenance_window.window.id}"
+  window_id     = "${aws_ssm_maintenance_window.scan_window.id}"
   resource_type = "INSTANCE"
 
   targets {
     key    = "tag: Patch Group"
     values = ["${element(var.scan_patch_groups, count.index)}"]
   }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 resource "aws_ssm_maintenance_window_task" "task_scan_patches" {
-  window_id        = "${aws_ssm_maintenance_window.window.id}"
+  window_id        = "${aws_ssm_maintenance_window.scan_window.id}"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-ApplyPatchBaseline"
   priority         = 1
@@ -84,7 +83,7 @@ resource "aws_ssm_maintenance_window_task" "task_scan_patches" {
 
 resource "aws_ssm_maintenance_window_target" "target_install" {
   count         = "${length(var.install_patch_groups)}"
-  window_id     = "${aws_ssm_maintenance_window.window.id}"
+  window_id     = "${aws_ssm_maintenance_window.install_window.id}"
   resource_type = "INSTANCE"
 
   targets {
@@ -98,7 +97,7 @@ resource "aws_ssm_maintenance_window_target" "target_install" {
 }
 
 resource "aws_ssm_maintenance_window_task" "task_install_patches" {
-  window_id        = "${aws_ssm_maintenance_window.window.id}"
+  window_id        = "${aws_ssm_maintenance_window.install_window.id}"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-ApplyPatchBaseline"
   priority         = 1
