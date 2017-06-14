@@ -29,8 +29,12 @@ variable "patch_severity" {
 
 ## maintenance window vars
 
-variable "maintenance_window_schedule" {
-  default = "cron(0 0 18 ? * SUN *)"
+variable "scan_maintenance_window_schedule" {
+  default = "cron(0 0 18 ? * WED *)"
+}
+
+variable "install_maintenance_window_schedule" {
+  default = "cron(0 0 21 ? * WED *)"
 }
 
 variable "maintenance_window_duration" {
@@ -41,7 +45,12 @@ variable "maintenance_window_cutoff" {
   default = "1"
 }
 
-variable "patch_groups" {
+variable "scan_patch_groups" {
   type    = "list"
   default = ["static", "disposable"]
+}
+
+variable "install_patch_groups" {
+  type    = "list"
+  default = ["automatic"]
 }

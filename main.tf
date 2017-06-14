@@ -24,37 +24,41 @@ resource "aws_ssm_patch_baseline" "baseline" {
   }
 }
 
-resource "aws_ssm_patch_group" "patchgroup" {
-  count       = "${length(var.patch_groups)}"
+resource "aws_ssm_patch_group" "scan_patchgroup" {
+  count       = "${length(var.scan_patch_groups)}"
   baseline_id = "${aws_ssm_patch_baseline.baseline.id}"
-  patch_group = "${element(var.patch_groups, count.index)}"
+  patch_group = "${element(var.scan_patch_groups, count.index)}"
+}
+
+resource "aws_ssm_patch_group" "install_patchgroup" {
+  count       = "${length(var.install_patch_groups)}"
+  baseline_id = "${aws_ssm_patch_baseline.baseline.id}"
+  patch_group = "${element(var.install_patch_groups, count.index)}"
 }
 
 resource "aws_ssm_maintenance_window" "window" {
   name     = "${var.envtype}-patch-maintenance-window"
-  schedule = "${var.maintenance_window_schedule}"
+  schedule = "${var.scan_maintenance_window_schedule}"
   duration = "${var.maintenance_window_duration}"
   cutoff   = "${var.maintenance_window_cutoff}"
-}
 
-resource "aws_ssm_maintenance_window_target" "target_scan" {
-  count         = "${length(var.patch_groups)}"
-  window_id     = "${aws_ssm_maintenance_window.window.id}"
-  resource_type = "INSTANCE"
-
-  targets {
-    key    = "tag: Patch Group"
-    values = ["${element(var.patch_groups, count.index)}"]
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
-resource "aws_ssm_maintenance_window_target" "target_install" {
+resource "aws_ssm_maintenance_window_target" "target_scan" {
+  count         = "${length(var.scan_patch_groups)}"
   window_id     = "${aws_ssm_maintenance_window.window.id}"
   resource_type = "INSTANCE"
 
   targets {
     key    = "tag: Patch Group"
-    values = ["${element(var.patch_groups, 1)}"]
+    values = ["${element(var.scan_patch_groups, count.index)}"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
@@ -78,11 +82,26 @@ resource "aws_ssm_maintenance_window_task" "task_scan_patches" {
   }
 }
 
+resource "aws_ssm_maintenance_window_target" "target_install" {
+  count         = "${length(var.install_patch_groups)}"
+  window_id     = "${aws_ssm_maintenance_window.window.id}"
+  resource_type = "INSTANCE"
+
+  targets {
+    key    = "tag: Patch Group"
+    values = ["${element(var.install_patch_groups, count.index)}"]
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
 resource "aws_ssm_maintenance_window_task" "task_install_patches" {
   window_id        = "${aws_ssm_maintenance_window.window.id}"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-ApplyPatchBaseline"
-  priority         = 2
+  priority         = 1
   service_role_arn = "${aws_iam_role.ssm_maintenance_window.arn}"
   max_concurrency  = "10"
   max_errors       = "2"
