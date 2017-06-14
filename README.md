@@ -3,14 +3,11 @@
 
 This module should be used where customers wish to patch Windows instances based on a schedule.
 
-The instances that require patching need to be tagged with their relevant "patch group".
-For example an instance that requires critical patches would need the following tag: Key: Patch Group Value: critical
-
 The schedule must be in cron format, for example by default the patch scan schedule occurs on a Wednesday 6PM, the patch install schedule occurs at 9PM.
 
 ### Prerequisites
 
-The instances tht you wish to be covered by ssm patch management must be tagged with their corresponding "Patch Group". For example we have used the defaults here of "static" and "disposable".
+The instances that you wish to be covered by ssm patch management must be tagged with their corresponding "Patch Group". For example we have used the defaults here of "static" and "disposable" for patch scanning, and "automatic" if you want patches automatically installed.
 
 By default:
 Instances that are tagged with Key: Patch Group, Value: Disposable will be scanned for Windows updates and then will have the updates installed.
