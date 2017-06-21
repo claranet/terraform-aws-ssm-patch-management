@@ -2,12 +2,12 @@
 
 variable "approved_patches" {
   type    = "list"
-  default = [""]
+  default = []
 }
 
 variable "rejected_patches" {
   type    = "list"
-  default = [""]
+  default = []
 }
 
 variable "product_versions" {
