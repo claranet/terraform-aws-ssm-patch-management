@@ -1,3 +1,5 @@
+variable "envtype" {}
+
 ## patch baseline vars
 
 variable "approved_patches" {
