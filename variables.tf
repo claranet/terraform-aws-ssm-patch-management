@@ -1,5 +1,3 @@
-variable "envtype" {}
-
 ## patch baseline vars
 
 variable "approved_patches" {
@@ -53,4 +51,12 @@ variable "scan_patch_groups" {
 variable "install_patch_groups" {
   type    = "list"
   default = ["automatic"]
+}
+
+variable "max_concurrency" {
+  default = "10"
+}
+
+variable "max_errors" {
+  default = "10"
 }
