@@ -67,8 +67,8 @@ resource "aws_ssm_maintenance_window_task" "task_scan_patches" {
   task_arn         = "AWS-ApplyPatchBaseline"
   priority         = 1
   service_role_arn = "${aws_iam_role.ssm_maintenance_window.arn}"
-  max_concurrency  = "10"
-  max_errors       = "2"
+  max_concurrency  = "${var.max_concurrency}"
+  max_errors       = "${var.max_errors}"
 
   targets {
     key    = "WindowTargetIds"
@@ -102,8 +102,8 @@ resource "aws_ssm_maintenance_window_task" "task_install_patches" {
   task_arn         = "AWS-ApplyPatchBaseline"
   priority         = 1
   service_role_arn = "${aws_iam_role.ssm_maintenance_window.arn}"
-  max_concurrency  = "10"
-  max_errors       = "2"
+  max_concurrency  = "${var.max_concurrency}"
+  max_errors       = "${var.max_errors}"
 
   targets {
     key    = "WindowTargetIds"
