@@ -18,7 +18,7 @@ Declare a module in your Terraform file, for example:
     module "ssm-patching" {
       source = "../modules/tf-aws-ssm-patch-mgmt"
 
-      envname                             = "${var.envname}"
+      envtype                             = "${var.envtype}"
       scan_maintenance_window_schedule    = "cron(0 0 17 ? * SUN *)"
       install_maintenance_window_schedule = "cron(0 0 20 ? * SUN *)"
     }
