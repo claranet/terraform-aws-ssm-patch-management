@@ -1,4 +1,16 @@
+variable "name" {}
+
+variable "envname" {}
+
 variable "envtype" {}
+
+variable "profile" {
+  default = "Windows"
+}
+
+variable "aws_region" {
+  default = "eu-west-1"
+}
 
 ## patch baseline vars
 
@@ -56,9 +68,13 @@ variable "install_patch_groups" {
 }
 
 variable "max_concurrency" {
-  default = "10"
+  default = "20"
 }
 
 variable "max_errors" {
-  default = "10"
+  default = "50"
 }
+
+## logging info
+
+variable "s3_bucket_name" {}

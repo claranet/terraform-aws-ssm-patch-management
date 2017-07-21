@@ -1,6 +1,6 @@
 resource "aws_ssm_patch_baseline" "baseline" {
-  name             = "${var.envtype}-patch-baseline"
-  description      = "${var.envtype} patch baseline"
+  name             = "${var.name}-${var.envname}-${var.envtype}-patch-baseline"
+  description      = "${var.profile} patch baseline"
   approved_patches = ["${var.approved_patches}"]
   rejected_patches = ["${var.rejected_patches}"]
 
@@ -37,14 +37,14 @@ resource "aws_ssm_patch_group" "install_patchgroup" {
 }
 
 resource "aws_ssm_maintenance_window" "scan_window" {
-  name     = "${var.envtype}-patch-maintenance-scan-window"
+  name     = "${var.name}-${var.envname}-patch-maintenance-scan-mw"
   schedule = "${var.scan_maintenance_window_schedule}"
   duration = "${var.maintenance_window_duration}"
   cutoff   = "${var.maintenance_window_cutoff}"
 }
 
 resource "aws_ssm_maintenance_window" "install_window" {
-  name     = "${var.envtype}-patch-maintenance-install-window"
+  name     = "${var.name}-${var.envname}-patch-maintenance-install-mw"
   schedule = "${var.install_maintenance_window_schedule}"
   duration = "${var.maintenance_window_duration}"
   cutoff   = "${var.maintenance_window_cutoff}"
@@ -56,7 +56,7 @@ resource "aws_ssm_maintenance_window_target" "target_scan" {
   resource_type = "INSTANCE"
 
   targets {
-    key    = "tag: Patch Group"
+    key    = "tag:Patch Group"
     values = ["${element(var.scan_patch_groups, count.index)}"]
   }
 }
@@ -79,20 +79,20 @@ resource "aws_ssm_maintenance_window_task" "task_scan_patches" {
     name   = "Operation"
     values = ["Scan"]
   }
+
+  logging_info {
+    s3_bucket_name = "${aws_s3_bucket.ssm_patch_log_bucket.id}"
+    s3_region      = "${var.aws_region}"
+  }
 }
 
 resource "aws_ssm_maintenance_window_target" "target_install" {
-  count         = "${length(var.install_patch_groups)}"
   window_id     = "${aws_ssm_maintenance_window.install_window.id}"
   resource_type = "INSTANCE"
 
   targets {
-    key    = "tag: Patch Group"
+    key    = "tag:Patch Group"
     values = ["${element(var.install_patch_groups, count.index)}"]
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
 
@@ -114,26 +114,9 @@ resource "aws_ssm_maintenance_window_task" "task_install_patches" {
     name   = "Operation"
     values = ["Install"]
   }
-}
 
-data "aws_iam_policy_document" "ssm_assume_role_policy" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["ec2.amazonaws.com", "ssm.amazonaws.com"]
-    }
+  logging_info {
+    s3_bucket_name = "${aws_s3_bucket.ssm_patch_log_bucket.id}"
+    s3_region      = "${var.aws_region}"
   }
-}
-
-resource "aws_iam_role" "ssm_maintenance_window" {
-  name               = "ssm-maintenance-window-role"
-  path               = "/system/"
-  assume_role_policy = "${data.aws_iam_policy_document.ssm_assume_role_policy.json}"
-}
-
-resource "aws_iam_role_policy_attachment" "role_attach" {
-  role       = "${aws_iam_role.ssm_maintenance_window.name}"
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonSSMMaintenanceWindowRole"
 }
