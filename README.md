@@ -10,8 +10,8 @@ The schedule must be in cron format, for example by default the patch scan sched
 The instances that you wish to be covered by ssm patch management must be tagged with their corresponding "Patch Group". For example we have used the defaults here of "static" and "disposable" for patch scanning, and "automatic" if you want patches automatically installed.
 
 By default:
-Instances that are tagged with Key: Patch Group, Value: Disposable will be scanned for Windows updates and then will have the updates installed.
-Instances that are tagged with Key: Patch Group, Value: Static will just be scanned and not installed.
+Instances that are tagged with Key: Patch Group, Value: Automatic will be scanned for Windows updates and then will have the updates installed.
+Instances that are tagged with Key: Patch Group, Value: Static and or "Disposable" will just be scanned and not installed.
 
 Declare a module in your Terraform file, for example:
 
@@ -74,7 +74,12 @@ variable "maintenance_window_cutoff" {
   default = "1"
 }
 
-variable "patch_groups" {
+variable "install_patch_groups" {
+  type    = "list"
+  default = ["automatic"]
+}
+
+variable "scan_patch_groups" {
   type    = "list"
   default = ["static", "disposable"]
 }
