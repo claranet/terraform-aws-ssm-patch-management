@@ -1,4 +1,4 @@
-## 1.3.1 (Unreleased)
+## 1.3.1 (September 22, 2017)
 
 IMPROVEMENTS:
 * Updated the examples in the README
