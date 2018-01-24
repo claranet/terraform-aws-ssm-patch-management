@@ -9,11 +9,6 @@ variable "envname" {
   type = "string"
 }
 
-variable "envtype" {
-  description = "This label will be added after 'envname' on all resources, and be added as the value for the 'Envtype' tag where supported"
-  type = "string"
-}
-
 variable "profile" {
   description = "This label will be added to the SSM baseline description"
   type = "string"
@@ -42,7 +37,7 @@ variable "rejected_patches" {
 variable "product_versions" {
   description = "The list of product versions for the SSM baseline"
   type    = "list"
-  default = ["WindowsServer2016", "WindowsServer2012R2"]
+  default = ["WindowsServer2016", "WindowsServer2012R2","WindowsServer2008R2"]
 }
 
 variable "patch_classification" {
@@ -85,7 +80,7 @@ variable "maintenance_window_cutoff" {
 variable "scan_patch_groups" {
   description = "The list of scan patching groups, one target will be created per entry in this list"
   type    = "list"
-  default = ["static", "disposable"]
+  default = ["manual"]
 }
 
 variable "install_patch_groups" {
