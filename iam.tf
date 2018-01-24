@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ssm_maintenance_window" {
-  name = "${var.name}-${var.envname}-${var.envtype}-ssm-mw-role"
+  name = "${var.name}-${var.envname}-ssm-mw-role"
   path = "/system/"
 
   assume_role_policy = <<EOF

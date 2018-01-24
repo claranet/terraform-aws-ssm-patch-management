@@ -1,5 +1,5 @@
 resource "aws_ssm_patch_baseline" "baseline" {
-  name             = "${var.name}-${var.envname}-${var.envtype}-patch-baseline"
+  name             = "${var.name}-${var.envname}-patch-baseline"
   description      = "${var.profile} patch baseline"
   approved_patches = ["${var.approved_patches}"]
   rejected_patches = ["${var.rejected_patches}"]
