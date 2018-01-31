@@ -1,3 +1,16 @@
+## 2.0.1 (January 31, 2018)
+
+IMPROVEMENTS:
+* Updated Instance tagging and Issues within README
+* Removed unused variable s3_bucket_name
+
+## 2.0.0 (January 24, 2018)
+
+IMPROVEMENTS:
+* Removed variable envtype
+* Scan Patch Group Tag changed from static and disposable to manual
+* Windows 2008R2 added to Product Versions
+
 ## 1.3.1 (September 22, 2017)
 
 IMPROVEMENTS:

@@ -100,9 +100,3 @@ variable "max_errors" {
   type    = "string"
   default = "50"
 }
-
-## logging info
-variable "s3_bucket_name" {
-  description = "The name of the S3 bucket to create for log storage"
-  type    = "string"
-}
