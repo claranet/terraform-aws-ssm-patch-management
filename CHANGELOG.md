@@ -1,3 +1,9 @@
+## 3.0.0 (March 28, 2018)
+
+IMPROVEMENTS:
+* Added support to specify a maintenance window schedule for each patch group 
+* Updated Instance tagging and variables within README
+
 ## 2.0.1 (January 31, 2018)
 
 IMPROVEMENTS:

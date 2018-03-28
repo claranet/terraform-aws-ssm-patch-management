@@ -53,18 +53,6 @@ variable "patch_severity" {
 }
 
 ## Maintenance window vars
-variable "scan_maintenance_window_schedule" {
-  description = "The schedule of the scan Maintenance Window in the form of a cron or rate expression"
-  type = "string"
-  default = "cron(0 0 18 ? * WED *)"
-}
-
-variable "install_maintenance_window_schedule" {
-  description = "The schedule of the install Maintenance Window in the form of a cron or rate expression"
-  type = "string"
-  default = "cron(0 0 21 ? * WED *)"
-}
-
 variable "maintenance_window_duration" {
   description = "The duration of the maintenence windows (hours)"
   type = "string"
@@ -78,15 +66,19 @@ variable "maintenance_window_cutoff" {
 }
 
 variable "scan_patch_groups" {
-  description = "The list of scan patching groups, one target will be created per entry in this list"
-  type    = "list"
-  default = ["manual"]
+  description = "The map of scan patching groups and maintenance window schedules"
+  type    = "map"
+  default = {
+    "manual" = "cron(0 0 18 ? * WED *)"
+  }
 }
 
 variable "install_patch_groups" {
-  description = "The list of install patching groups, one target will be created per entry in this list"
-  type    = "list"
-  default = ["automatic"]
+  description = "The map of install patching groups and maintenance window schedules"
+  type    = "map"
+  default = {
+    "automatic" = "cron(0 0 21 ? * WED *)"
+  }
 }
 
 variable "max_concurrency" {
