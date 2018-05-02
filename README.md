@@ -11,7 +11,7 @@ The instances that you wish to be covered by SSM patch management must be tagged
 _By default:_
 * Instances that are tagged with Key: 'Patch Group', Value: 'automatic' will be scanned for Windows updates and then will have the updates installed.
 
-* Instances that are tagged with Key: 'Patch Group', Value: 'manual' will just be scanned and not installed.
+* Instances that are tagged with Key: 'Patch Group', Value: 'static' and or 'disposable' will just be scanned and not installed.
 
 <br />
 
