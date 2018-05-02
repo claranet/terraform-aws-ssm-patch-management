@@ -9,9 +9,9 @@ The schedule must be in cron or rate format, for example by default the patch sc
 The instances that you wish to be covered by SSM patch management must be tagged with their corresponding "Patch Group". For example we have used the defaults here of "static" and "disposable" for patch scanning, and "automatic" if you want patches automatically installed.
 
 _By default:_
-* Instances that are tagged with Key: 'Patch Group', Value: 'Automatic' will be scanned for Windows updates and then will have the updates installed.
+* Instances that are tagged with Key: 'Patch Group', Value: 'automatic' will be scanned for Windows updates and then will have the updates installed.
 
-* Instances that are tagged with Key: 'Patch Group', Value: 'Static' and or 'Disposable' will just be scanned and not installed.
+* Instances that are tagged with Key: 'Patch Group', Value: 'static' and or 'disposable' will just be scanned and not installed.
 
 <br />
 
