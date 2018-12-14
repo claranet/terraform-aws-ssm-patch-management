@@ -62,6 +62,8 @@ resource "aws_ssm_maintenance_window_target" "target_scan" {
 }
 
 resource "aws_ssm_maintenance_window_task" "task_scan_patches" {
+  name             = "${var.name}-${var.envname}-scan-patches"
+  description      = "${var.profile} scan patches task"
   window_id        = "${aws_ssm_maintenance_window.scan_window.id}"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-ApplyPatchBaseline"
@@ -97,6 +99,8 @@ resource "aws_ssm_maintenance_window_target" "target_install" {
 }
 
 resource "aws_ssm_maintenance_window_task" "task_install_patches" {
+  name             = "${var.name}-${var.envname}-install-patches"
+  description      = "${var.profile} install patches task"
   window_id        = "${aws_ssm_maintenance_window.install_window.id}"
   task_type        = "RUN_COMMAND"
   task_arn         = "AWS-ApplyPatchBaseline"
