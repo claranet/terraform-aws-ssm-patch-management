@@ -5,7 +5,7 @@ resource "aws_ssm_patch_baseline" "baseline" {
   rejected_patches = ["${var.rejected_patches}"]
 
   approval_rule {
-    approve_after_days = 7
+    approve_after_days = "${var.patch_approval_delay}"
 
     patch_filter {
       key    = "PRODUCT"
@@ -80,7 +80,6 @@ resource "aws_ssm_patch_group" "install_patchgroup" {
   baseline_id = "${aws_ssm_patch_baseline.baseline.id}"
   patch_group = "${element(keys(var.install_patch_groups), count.index)}"
 }
-
 
 resource "aws_ssm_maintenance_window" "install_window" {
   count    = "${length(var.install_patch_groups)}"
