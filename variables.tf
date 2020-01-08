@@ -34,7 +34,7 @@ variable "rejected_patches" {
   default     = []
 }
 
-varible "patch_approval_delay" {
+variable "patch_approval_delay" {
   description = "The number of days to delay patch auto-approval by"
   default     = 7
 }
